@@ -1,1 +1,18 @@
+# 运行期数据（每个部署实例自己的文档状态，不应进版本库）
 data/
+
+# 依赖（本项目零第三方依赖，保留以防以后引入）
+node_modules/
+
+# 编辑器 / 系统
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
+Thumbs.db
+
+# 日志与临时文件
+*.log
+npm-debug.log*
+*.tmp
