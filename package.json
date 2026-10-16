@@ -1,0 +1,32 @@
+{
+  "name": "lan-sync-demo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "局域网实时同步 Demo —— 逻辑上一份文件、物理上多份副本；写入不阻塞，稳定后完全一致",
+  "keywords": [
+    "crdt",
+    "realtime-sync",
+    "local-first",
+    "eventual-consistency",
+    "websocket",
+    "lan",
+    "zero-dependency"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "bash test/run-all.sh",
+    "test:hash": "node test/hash-parity.test.js",
+    "test:focus": "node test/focus.test.js",
+    "test:multi-server": "node test/multi-server.test.js",
+    "test:convergence": "node test/convergence.test.js",
+    "test:integration": "node test/integration.test.js",
+    "diagnose": "node test/diagnose.js 200 500"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
