@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>局域网实时同步 Demo · 分层同步</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<!-- ══════════════ 权限门 ══════════════ -->
+<div id="gate" class="gate">
+  <div class="gate-card">
+    <h1>局域网实时同步 Demo</h1>
+    <p class="muted">
+      这个 Demo 演示的核心不是"更好的同步算法"，而是一条设计原则：<br>
+      <strong>逻辑上一份文件，物理上多份副本；写入不阻塞，稳定后完全一致。</strong>
+    </p>
+    <label class="field">
+      <span>权限密码</span>
+      <input id="gate-pass" type="password" inputmode="numeric" placeholder="请输入权限密码" autocomplete="current-password">
+    </label>
+    <label class="field">
+      <span>本设备名称</span>
+      <input id="gate-name" type="text" placeholder="例如：客厅笔记本">
+    </label>
+    <button id="gate-btn" class="primary big">进入</button>
+    <div id="gate-msg" class="gate-msg"></div>
+    <p class="fine">进入后，把地址栏里的局域网地址发给手机／平板，用同一密码进入即可看到双向实时同步。</p>
+  </div>
+</div>
+
+<!-- ══════════════ 主界面 ══════════════ -->
+<div id="app" class="app hidden">
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="dot" id="conn-dot"></span>
+      <strong>分层同步</strong>
+      <span class="muted small" id="conn-text">连接中…</span>
+    </div>
+
+    <div class="topbar-right">
+      <span class="pill" id="pill-devices">在线设备 0</span>
+      <span class="pill mono" id="pill-hash">hash –</span>
+      <button id="btn-check" class="ghost">同步校验</button>
+    </div>
+  </header>
+
+  <div class="subbar">
+    <div class="me" id="me"></div>
+    <div class="spacer"></div>
+    <div class="viewswitch" role="tablist">
+      <button class="tab active" data-view="merged">合并视图</button>
+      <button class="tab" data-view="layers">分层视图</button>
+    </div>
+    <button id="btn-race" class="ghost small-btn" title="向同一分段连续投递 3 次并发修改，观察服务端如何确定性裁决">并发竞态演示</button>
+  </div>
+
+  <main class="layout">
+    <section class="editor-wrap">
+      <!-- 合并视图 -->
+      <div id="view-merged" class="view">
+        <div class="viewhint">
+          <strong>合并视图</strong> —— 这就是"逻辑上的那一份文件"。所有设备写入的内容按服务端分配的确定顺序排列，
+          左边色条表示该分段的来源设备。多端同时写，稳定之后各端看到的就是这个。
+        </div>
+        <div id="merged-list" class="seglist"></div>
+        <div class="newseg">
+          <textarea id="new-text" rows="2" placeholder="在这里输入，回车发送为本设备新增的一段（Shift+回车换行）"></textarea>
+          <button id="btn-add" class="primary">新增分段</button>
+        </div>
+      </div>
+
+      <!-- 分层视图 -->
+      <div id="view-layers" class="view hidden">
+        <div class="viewhint">
+          <strong>分层视图</strong> —— 同一个文件，按来源设备拆成独立的层。
+          每一层都是完整的、可单独辨认的。这就是"每台设备的内容独立显示、不被合并抹平"。
+        </div>
+        <div id="layers-list" class="layers"></div>
+      </div>
+    </section>
+
+    <aside class="side">
+      <div class="card">
+        <h3>设备（副本） <span class="muted small" id="dev-count"></span></h3>
+        <div id="dev-list" class="devlist"></div>
+      </div>
+
+      <div class="card">
+        <h3>操作时间线 <span class="muted small">稳定之前的过程被完整保留</span></h3>
+        <div class="legend">
+          <span class="lg lg-ok">✓ 生效</span>
+          <span class="lg lg-skip">✕ 被并发裁决</span>
+        </div>
+        <div id="timeline" class="timeline"></div>
+      </div>
+
+      <div class="card">
+        <h3>同步校验</h3>
+        <div class="checkbox">
+          <div>本端 <code class="mono" id="hash-local">–</code></div>
+          <div>服务端 <code class="mono" id="hash-server">–</code></div>
+          <div id="hash-verdict" class="verdict">点击「同步校验」比对</div>
+        </div>
+        <p class="fine">
+          哈希一致 = 本端与服务端状态逐字节相同。多端同时写完之后，各端点一次校验，
+          哈希全部相同即证明收敛。
+        </p>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="botbar">
+    <span class="muted small" id="foot-left">–</span>
+    <div class="spacer"></div>
+    <button id="btn-copy" class="ghost small-btn">复制纯文本</button>
+    <span id="toast" class="toast"></span>
+  </footer>
+</div>
+
+<script src="/client.js"></script>
+</body>
+</html>
